@@ -33,6 +33,10 @@
 # clean-up fort.* files otherwise one of the tests will fail
 llvm_test_prepare(rm -f %S/fort.*)
 
+if (PGMATH)
+	link_libraries(pgmath ${PGMATH_DIR}/libpgmath.so)
+endif()
+
 # Group 1:
 # Tests 905 and 907 use list-directed output, for which the standard allows some
 # flexibility, e.g.,  with regards to how many white space characters or
