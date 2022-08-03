@@ -15,14 +15,18 @@
 ################################################################################
 
 
-option(MPI "Use MPI" OFF)
-option(OPT "Turn on optimizations" ON)
-option(OPENMP "Enable OpenMP" OFF)
-option(KNL "Intel KNL target" OFF)
-option(HASWELL "Does the CPU use the Haswell u-arch" OFF)
-option(CRAY "Is the target system a Cray?" OFF)
+option(SNAP_MPI "Use MPI for the fortran SNAP test" OFF)
+option(SNAP_OPT "Turn on optimizations for the fortran SNAP test" ON)
+option(SNAP_OPENMP "Enable OpenMP for the fortran SNAP test" OFF)
+option(SNAP_KNL "Intel KNL target for the fortran SNAP test" OFF)
+option(SNAP_HASWELL 
+	"Does the CPU use the Haswell u-arch for the fortran SNAP test" 
+	OFF)
+option(SNAP_CRAY 
+	"Target system is a Cray machine for the fortran SNAP test"
+	OFF)
 
-if(MPI)
+if(SNAP_MPI)
 	find_package(MPI REQUIRED)
 	message(STATUS "MPI_Fortran_COMPILER - ${MPI_Fortran_COMPILER}")
 	message(STATUS "MPI_Fortran_COMPILE_OPTIONS - ${MPI_Fortran_COMPILE_OPTIONS}")
@@ -34,7 +38,7 @@ if(MPI)
 	message(STATUS "MPI_Fortran_LIBRARIES - ${MPI_Fortran_LIBRARIES}")
 endif()
 
-if(OPENMP)
+if(SNAP_OPENMP)
 	find_package(OpenMP REQUIRED)
 	message(STATUS "OpenMP_VERSION - ${OpenMP_VERSION}")
 	message(STATUS "OpenMP_Fortran_FOUND - ${OpenMP_Fortran_COMPILE_OPTIONS}")
@@ -69,7 +73,7 @@ set(SNAP_COMPILER_OPTIONS_GNU_OPT
 	"-O3" 
 	CACHE 
 	STRING 
-	"GNU compiler options when OPT=ON"
+	"GNU compiler options when SNAP_OPT=ON"
 )
 set(SNAP_COMPILER_OPTIONS_GNU_NOT_OPT
 	"-O0"
@@ -78,11 +82,11 @@ set(SNAP_COMPILER_OPTIONS_GNU_NOT_OPT
 	"-fbacktrace"
 	CACHE 
 	STRING 
-	"GNU compiler options when OPT=OFF"
+	"GNU compiler options when SNAP_OPT=OFF"
 )
 set(SNAP_COMPILER_OPTIONS_GNU
-	$<$<BOOL:${OPENMP}>:-fopenmp>
-	$<IF:$<BOOL:${OPT}>,${SNAP_COMPILER_OPTIONS_GNU_OPT},${SNAP_COMPILER_OPTIONS_GNU_NOT_OPT}>
+	$<$<BOOL:${SNAP_OPENMP}>:-fopenmp>
+	$<IF:$<BOOL:${SNAP_OPT}>,${SNAP_COMPILER_OPTIONS_GNU_OPT},${SNAP_COMPILER_OPTIONS_GNU_NOT_OPT}>
 	CACHE
 	STRING
 	"Compiler options when GNU compiler detected"
@@ -99,7 +103,7 @@ set(SNAP_COMPILER_OPTIONS_IFORT_OPT
 	"-fp-speculation fast"
 	CACHE 
 	STRING 
-	"ifort compiler options when OPT=ON"
+	"ifort compiler options when SNAP_OPT=ON"
 )
 set(SNAP_COMPILER_OPTIONS_INTEL_NOT_OPT
 	"-O0"
@@ -109,12 +113,12 @@ set(SNAP_COMPILER_OPTIONS_INTEL_NOT_OPT
 	"-warn unused"
 	CACHE 
 	STRING 
-	"ifort compiler options when OPT=OFF"
+	"ifort compiler options when SNAP_OPT=OFF"
 )
 set(SNAP_COMPILER_OPTIONS_IFORT
-	$<$<BOOL:${OPENMP}>:-qopenmp>
-	$<IF:$<BOOL:${OPT}>,${SNAP_COMPILER_OPTIONS_IFORT_OPT},${SNAP_COMPILER_OPTIONS_INTEL_NOT_OPT}>
-	$<IF:$<BOOL:${HASWELL}>,"-xcore-avx2","-xHost">
+	$<$<BOOL:${SNAP_OPENMP}>:-qopenmp>
+	$<IF:$<BOOL:${SNAP_OPT}>,${SNAP_COMPILER_OPTIONS_IFORT_OPT},${SNAP_COMPILER_OPTIONS_INTEL_NOT_OPT}>
+	$<IF:$<BOOL:${SNAP_HASWELL}>,"-xcore-avx2","-xHost">
 	CACHE
 	STRING
 	"Compiler options when ifort compiler detected"
@@ -132,14 +136,14 @@ set(SNAP_COMPILER_OPTIONS_IFORT_KNL_OPT
 	"-fno-alias -fno-fnalias"
 	CACHE 
 	STRING 
-	"ifort compiler options when OPT=ON and KNL=ON"
+	"ifort compiler options when SNAP_OPT=ON and KNL=ON"
 )
 # This is the same as SNAP_COMPILER_OPTIONS_INTEL_NOT_OPT
 #set(SNAP_COMPILER_OPTIONS_IFORT_KNL_NOT_OPT
 #)
 set(SNAP_COMPILER_OPTIONS_IFORT_KNL
-	$<$<BOOL:${OPENMP}>:-qopenmp>
-	$<IF:$<BOOL:${OPT}>,${SNAP_COMPILER_OPTIONS_IFORT_KNL_OPT},${SNAP_COMPILER_OPTIONS_INTEL_NOT_OPT}>
+	$<$<BOOL:${SNAP_OPENMP}>:-qopenmp>
+	$<IF:$<BOOL:${SNAP_OPT}>,${SNAP_COMPILER_OPTIONS_IFORT_KNL_OPT},${SNAP_COMPILER_OPTIONS_INTEL_NOT_OPT}>
 	CACHE
 	STRING
 	"Compiler options when ifort + knl compiler detected"
@@ -154,14 +158,14 @@ set(SNAP_COMPILER_OPTIONS_IFX_OPT
 	"-align array32byte"
 	CACHE 
 	STRING 
-	"ifx compiler options when OPT=ON"
+	"ifx compiler options when SNAP_OPT=ON"
 )
 # This is the same as SNAP_COMPILER_OPTIONS_INTEL_NOT_OPT
 #set(SNAP_COMPILER_OPTIONS_IFX_OPT
 #)
 set(SNAP_COMPILER_OPTIONS_IFX
-	$<$<BOOL:${OPENMP}>:-fiopenmp>
-	$<IF:$<BOOL:${OPT}>,${SNAP_COMPILER_OPTIONS_IFX_OPT},${SNAP_COMPILER_OPTIONS_INTEL_NOT_OPT}>
+	$<$<BOOL:${SNAP_OPENMP}>:-fiopenmp>
+	$<IF:$<BOOL:${SNAP_OPT}>,${SNAP_COMPILER_OPTIONS_IFX_OPT},${SNAP_COMPILER_OPTIONS_INTEL_NOT_OPT}>
 	CACHE
 	STRING
 	"Compiler options when ifx compiler detected"
@@ -172,17 +176,17 @@ set(SNAP_COMPILER_OPTIONS_LLVM_FLANG_OPT
 	"" 
 	CACHE 
 	STRING 
-	"LLVMFlang compiler options when OPT=ON"
+	"LLVMFlang compiler options when SNAP_OPT=ON"
 )
 set(SNAP_COMPILER_OPTIONS_LLVM_FLANG_NOT_OPT
 	""
 	CACHE 
 	STRING 
-	"LLVMFlang compiler options when OPT=OFF"
+	"LLVMFlang compiler options when SNAP_OPT=OFF"
 )
 set(SNAP_COMPILER_OPTIONS_LLVM_FLANG
-	$<$<BOOL:${OPENMP}>:""> # what is the OpenMP flag for LLVMFlang?
-	$<IF:$<BOOL:${OPT}>,${SNAP_COMPILER_OPTIONS_LLVM_FLANG_OPT},${SNAP_COMPILER_OPTIONS_LLVM_FLANG_NOT_OPT}>
+	$<$<BOOL:${SNAP_OPENMP}>:""> # what is the OpenMP flag for LLVMFlang?
+	$<IF:$<BOOL:${SNAP_OPT}>,${SNAP_COMPILER_OPTIONS_LLVM_FLANG_OPT},${SNAP_COMPILER_OPTIONS_LLVM_FLANG_NOT_OPT}>
 	CACHE
 	STRING
 	"Compiler options when GNU compiler detected"
@@ -227,58 +231,39 @@ set(SNAP_SOURCE_FILES
 	"List of SNAP source files"
 )
 
-# Handle files that need to be proprocessed, i.e., files with .F90 and NOT .f90
-set(SNAP_SOURCE_FILES_TO_PREPROC ${SNAP_SOURCE_FILES})
-list(FILTER SNAP_SOURCE_FILES_TO_PREPROC INCLUDE REGEX .*\.F90)
-set(SNAP_SOURCE_FILES_TO_PREPROC 
-	${SNAP_SOURCE_FILES_TO_PREPROC}
-	CACHE
-	STRING
-	"List of SNAP source files to preprocess"
+add_executable(snap
+	${SNAP_SOURCE_FILES}
 )
-set_source_files_properties(
-	${SNAP_SOURCE_FILES_TO_PREPROC}
-	PROPERTIES
-		Fortran_PREPROCESS ON
-)
-
-add_executable(snap)
 
 if (PGMATH)
 	add_dependencies(snap pgmath)
 endif()
 
-target_sources(snap
-	PRIVATE
-		${SNAP_SOURCE_FILES}
-)
-
 target_compile_options(snap 
 	PRIVATE
 		$<$<Fortran_COMPILER_ID:GNU>:${SNAP_COMPILER_OPTIONS_GNU}>
-		$<$<AND:$<Fortran_COMPILER_ID:Intel>,$<NOT:$<BOOL:${KNL}>>>:${SNAP_COMPILER_OPTIONS_IFORT}>
-		$<$<AND:$<Fortran_COMPILER_ID:Intel>,$<BOOL:${KNL}>>:${SNAP_COMPILER_OPTIONS_IFORT_KNL}>
+		$<$<AND:$<Fortran_COMPILER_ID:Intel>,$<NOT:$<BOOL:${SNAP_KNL}>>>:${SNAP_COMPILER_OPTIONS_IFORT}>
+		$<$<AND:$<Fortran_COMPILER_ID:Intel>,$<BOOL:${SNAP_KNL}>>:${SNAP_COMPILER_OPTIONS_IFORT_KNL}>
 		$<$<Fortran_COMPILER_ID:IntelLLVM>:${SNAP_COMPILER_OPTIONS_IFX}>
 		$<$<Fortran_COMPILER_ID:LLVMFlang>:${SNAP_COMPILER_OPTIONS_LLVM_FLANG}>
 )
 target_compile_definitions(snap
 	PRIVATE
 		${USER_DEFS}
-		$<$<AND:$<BOOL:${MPI}>,$<BOOL:${CRAY}>>:MPI>
-		$<$<BOOL:${OPENMP}>:OPENMP>
+		$<$<AND:$<BOOL:${SNAP_MPI}>,$<BOOL:${SNAP_CRAY}>>:MPI>
+		$<$<BOOL:${SNAP_OPENMP}>:OPENMP>
 )
 # -I$(MPICH_DIR)/include
 target_include_directories(snap
 	PRIVATE
-		$<$<AND:$<BOOL:${MPI}>,$<BOOL:${CRAY}>>:${MPI_Fortran_INCLUDE_DIRS}>
-		$<$<BOOL:${OPENMP}>:${OpenMP_Fortran_INCLUDE_DIRS}>
+		$<$<AND:$<BOOL:${SNAP_MPI}>,$<BOOL:${SNAP_CRAY}>>:${MPI_Fortran_INCLUDE_DIRS}>
+		$<$<BOOL:${SNAP_OPENMP}>:${OpenMP_Fortran_INCLUDE_DIRS}>
 )
 target_link_libraries(snap
 	PRIVATE
-		"$<$<AND:$<BOOL:${MPI}>,$<BOOL:${CRAY}>>:${MPI_Fortran_LIBRARIES}>"
-		"$<$<BOOL:${OPENMP}>:${OpenMP_Fortran_LIBRARIES}>"
+		"$<$<AND:$<BOOL:${SNAP_MPI}>,$<BOOL:${SNAP_CRAY}>>:${MPI_Fortran_LIBRARIES}>"
+		"$<$<BOOL:${SNAP_OPENMP}>:${OpenMP_Fortran_LIBRARIES}>"
 		"$<$<BOOL:${PGMATH}>:${PGMATH_DIR}/libpgmath.so>"
-		#"$<$<Fortran_COMPILER_ID:LLVMFlang>:${PGMATH_DIR}/libpgmath.so>"
 )
 
 macro(llvm_test_verify_hash_program_output _file)
@@ -312,7 +297,6 @@ if(PROJECT_NAME STREQUAL "test-suite")
   set_property(GLOBAL APPEND PROPERTY TEST_SUITE_TARGETS snap)
   test_suite_add_build_dependencies(snap)
 
-	# TODO: this shouldn't break anything, right?
   if(TEST_SUITE_LLVM_SIZE)
     add_custom_command(TARGET ${target} POST_BUILD
       COMMAND ${TEST_SUITE_LLVM_SIZE} --format=sysv $<TARGET_FILE:${target}>
@@ -349,7 +333,6 @@ if(PROJECT_NAME STREQUAL "test-suite")
 	# pass it to the llvm_test_run fxn
   llvm_test_run(${RUN_OPTIONS})
 
-	# TODO: this shouldn't break anything, right?
   # Hash if we've been asked to.
   if(HASH_PROGRAM_OUTPUT)
     llvm_test_verify_hash_program_output(%o)
@@ -385,58 +368,4 @@ if(PROJECT_NAME STREQUAL "test-suite")
 	# we'll need to copy that file over to the binary directory. 
 	file(COPY lit.local.cfg DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
 endif()
-
-# create line counting functionality
-add_custom_target(
-	count
-	DEPENDS
-		Lines
-)
-
-add_custom_command(
-	OUTPUT
-		src_list.txt
-	DEPENDS
-		${SNAP_SOURCE_FILES}
-	COMMAND
-		cmake -E touch ${CMAKE_CURRENT_BINARY_DIR}/src_list.txt
-	COMMAND
-		echo ${SNAP_SOURCE_FILES} > ${CMAKE_CURRENT_BINARY_DIR}/src_list.txt
-	COMMENT
-		"Generate source file list lines of code"
-	VERBATIM
-)
-add_custom_command(
-	OUTPUT
-		Lines
-	DEPENDS
-		src_list.txt
-	COMMAND
-		cmake -E copy 
-			${CMAKE_CURRENT_SOURCE_DIR}/LineCount	
-			${CMAKE_CURRENT_BINARY_DIR}/LineCount
-	COMMAND
-		cmake -E copy 
-			${CMAKE_CURRENT_SOURCE_DIR}/LineReport	
-			${CMAKE_CURRENT_BINARY_DIR}/LineReport
-	COMMAND
-		cmake -E remove ${CMAKE_CURRENT_BINARY_DIR}/Lines
-	COMMAND
-		cmake -E touch ${CMAKE_CURRENT_BINARY_DIR}/Lines
-	COMMAND
-		cmake -E cat ${CMAKE_CURRENT_BINARY_DIR}/src_list.txt
-	COMMAND
-		bash -c "while read line; do \
-			for file in $line; do \
-				${CMAKE_CURRENT_BINARY_DIR}/LineCount ${CMAKE_CURRENT_SOURCE_DIR}/$file	${CMAKE_CURRENT_BINARY_DIR}/Lines; \
-			done; \
-		done < '${CMAKE_CURRENT_BINARY_DIR}/src_list.txt'" 
-	COMMAND
-		awk -f ${CMAKE_CURRENT_BINARY_DIR}/LineReport < ${CMAKE_CURRENT_BINARY_DIR}/Lines >> ${CMAKE_CURRENT_BINARY_DIR}/Lines
-	COMMAND
-		cmake -E cat ${CMAKE_CURRENT_BINARY_DIR}/Lines
-	COMMAND
-		cmake -E remove ${CMAKE_CURRENT_BINARY_DIR}/src_list.txt
-	VERBATIM
-)
 
