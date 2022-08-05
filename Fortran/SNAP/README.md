@@ -1,6 +1,10 @@
 SNAP: SN (Discrete Ordinates) Application Proxy
 ===============================================
 
+llvm-test-suite
+-----------
+This repository was modified to serve as a Fortran regression test in the llvm-test-suite
+
 Description
 -----------
 
